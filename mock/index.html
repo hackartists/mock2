@@ -1,0 +1,2777 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JEONGDOK · 정독 — Learning RPG for 분당·판교 학부모</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=Newsreader:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-base: #04061A;
+    --bg-mid: #0A0F2E;
+    --bg-elevated: #121845;
+
+    --glass: rgba(140, 170, 255, 0.045);
+    --glass-2: rgba(140, 170, 255, 0.085);
+    --glass-3: rgba(140, 170, 255, 0.14);
+
+    --border-soft: rgba(255, 255, 255, 0.08);
+    --border-mid: rgba(255, 255, 255, 0.16);
+    --border-strong: rgba(255, 255, 255, 0.28);
+
+    --text: #F2F4FF;
+    --text-mute: rgba(242, 244, 255, 0.62);
+    --text-faint: rgba(242, 244, 255, 0.38);
+
+    --cyan: #20F0CE;
+    --cyan-2: #5BFFE0;
+    --cyan-glow: rgba(32, 240, 206, 0.55);
+
+    --gold: #FFC85C;
+    --gold-2: #FFE39B;
+    --gold-glow: rgba(255, 200, 92, 0.55);
+
+    --magenta: #FF5E8E;
+    --magenta-glow: rgba(255, 94, 142, 0.5);
+
+    --blue: #6BA3FF;
+    --blue-glow: rgba(107, 163, 255, 0.5);
+
+    --success: #50E3A4;
+    --warn: #FFAA4D;
+
+    --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255,255,255,0.08) inset;
+    --shadow-elevated: 0 24px 80px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255,255,255,0.12) inset;
+
+    --r-sm: 10px;
+    --r-md: 16px;
+    --r-lg: 22px;
+    --r-xl: 30px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  html { color-scheme: dark; }
+
+  body {
+    font-family: 'IBM Plex Sans KR', sans-serif;
+    background: var(--bg-base);
+    color: var(--text);
+    font-size: 14.5px;
+    line-height: 1.55;
+    letter-spacing: -0.005em;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    perspective: 1200px;
+  }
+  .display { font-family: 'Bricolage Grotesque', sans-serif; letter-spacing: -0.02em; }
+  .num { font-family: 'Bricolage Grotesque', sans-serif; font-feature-settings: 'tnum' 1; font-variant-numeric: tabular-nums; }
+  .num-it { font-family: 'Newsreader', serif; font-style: italic; font-feature-settings: 'tnum' 1; font-variant-numeric: tabular-nums; }
+  .upcase { text-transform: uppercase; letter-spacing: 0.16em; font-size: 10.5px; font-weight: 500; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; color: inherit; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.16); }
+
+  /* ==== BACKGROUND MESH ==== */
+  .bg-mesh {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background:
+      radial-gradient(ellipse 65% 50% at 8% 12%, rgba(32, 240, 206, 0.18) 0%, transparent 55%),
+      radial-gradient(ellipse 55% 45% at 90% 25%, rgba(107, 163, 255, 0.22) 0%, transparent 55%),
+      radial-gradient(ellipse 70% 60% at 75% 90%, rgba(255, 200, 92, 0.14) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 20% 85%, rgba(255, 94, 142, 0.12) 0%, transparent 55%),
+      linear-gradient(180deg, #04061A 0%, #070B26 50%, #04061A 100%);
+    animation: meshDrift 24s ease-in-out infinite alternate;
+  }
+  @keyframes meshDrift {
+    0% { transform: translate(0,0) scale(1); }
+    50% { transform: translate(2%, -1.5%) scale(1.04); }
+    100% { transform: translate(-1.5%, 2%) scale(1); }
+  }
+  .bg-grid {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.5;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 70% 70% at 50% 30%, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 30%, black 30%, transparent 80%);
+  }
+  .bg-noise {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.5;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* particles */
+  .particles {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .particle {
+    position: absolute;
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 8px var(--cyan-glow), 0 0 18px var(--cyan-glow);
+    opacity: 0;
+    animation: floatUp 16s linear infinite;
+  }
+  .particle.gold { background: var(--gold); box-shadow: 0 0 8px var(--gold-glow), 0 0 18px var(--gold-glow); }
+  .particle.blue { background: var(--blue); box-shadow: 0 0 8px var(--blue-glow), 0 0 18px var(--blue-glow); }
+  @keyframes floatUp {
+    0%   { transform: translateY(110vh) translateX(0); opacity: 0; }
+    10%  { opacity: 0.7; }
+    90%  { opacity: 0.5; }
+    100% { transform: translateY(-10vh) translateX(40px); opacity: 0; }
+  }
+
+  /* ==== APP LAYOUT ==== */
+  .app {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+    max-width: 1480px;
+    margin: 0 auto;
+    padding: 24px;
+    gap: 24px;
+  }
+
+  /* ==== SIDEBAR ==== */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    position: sticky;
+    top: 24px;
+    align-self: start;
+    max-height: calc(100vh - 48px);
+  }
+  .glass {
+    background: var(--glass);
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    border: 1px solid var(--border-mid);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-card);
+    position: relative;
+  }
+  .glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.32), rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%, rgba(255,255,255,0.08));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* brand */
+  .brand {
+    padding: 20px 22px 18px;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+  .brand .logo-row { display: flex; align-items: center; gap: 10px; }
+  .brand .logo-mark {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: conic-gradient(from 200deg, var(--cyan), var(--blue), var(--magenta), var(--gold), var(--cyan));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: #050818;
+    box-shadow: 0 0 24px rgba(32,240,206,0.35), 0 4px 12px rgba(0,0,0,0.4) inset;
+    animation: logoSpin 12s linear infinite;
+  }
+  @keyframes logoSpin { to { filter: hue-rotate(360deg); } }
+  .brand .ko { font-family: 'Bricolage Grotesque', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: -0.04em; }
+  .brand .ko b { background: linear-gradient(135deg, var(--cyan), var(--blue)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .brand .en { font-family: 'Newsreader', serif; font-style: italic; font-size: 11px; color: var(--text-faint); margin-top: 2px; letter-spacing: 0.04em; }
+
+  /* character card */
+  .char-card { padding: 18px 18px 16px; }
+  .char-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .char-avatar {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4), transparent 50%),
+      conic-gradient(from 135deg, var(--cyan), var(--blue), var(--magenta), var(--gold), var(--cyan));
+    position: relative;
+    box-shadow: 0 0 16px var(--cyan-glow), 0 8px 16px rgba(0,0,0,0.5);
+    flex-shrink: 0;
+  }
+  .char-avatar::after {
+    content: '서';
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: rgba(5,8,24,0.85);
+    text-shadow: 0 0 8px rgba(255,255,255,0.4);
+  }
+  .char-info { flex: 1; min-width: 0; }
+  .char-name { font-size: 14px; font-weight: 600; }
+  .char-title {
+    font-family: 'Newsreader', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--cyan);
+    margin-top: 2px;
+    letter-spacing: 0.02em;
+  }
+  .lvl-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px 3px 7px;
+    border-radius: 100px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-2));
+    color: #1a1300;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    box-shadow: 0 0 12px var(--gold-glow), 0 2px 4px rgba(0,0,0,0.3);
+    margin-top: 6px;
+    letter-spacing: 0.02em;
+  }
+  .lvl-badge svg { width: 10px; height: 10px; }
+
+  /* xp bar */
+  .xp-section { margin-top: 6px; }
+  .xp-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-mute); margin-bottom: 6px; }
+  .xp-label .upcase { font-size: 9.5px; }
+  .xp-label .num-it { color: var(--cyan); font-size: 12px; }
+  .xp-bar {
+    height: 8px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 100px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.6);
+  }
+  .xp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--cyan), var(--cyan-2));
+    border-radius: 100px;
+    box-shadow: 0 0 12px var(--cyan-glow);
+    position: relative;
+    transition: width 1.4s cubic-bezier(.4,0,.2,1);
+  }
+  .xp-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: xpShimmer 2.5s linear infinite;
+  }
+  @keyframes xpShimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* nav menu */
+  .menu { padding: 10px 8px; }
+  .menu-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 14px;
+    border-radius: 12px;
+    background: transparent;
+    border: 1px solid transparent;
+    width: 100%;
+    text-align: left;
+    color: var(--text-mute);
+    font-size: 14px;
+    transition: all .2s;
+    position: relative;
+  }
+  .menu-item:hover { background: var(--glass-2); color: var(--text); }
+  .menu-item.active {
+    background: linear-gradient(135deg, rgba(32,240,206,0.16), rgba(107,163,255,0.08));
+    border-color: rgba(32,240,206,0.32);
+    color: var(--text);
+    box-shadow: 0 4px 16px rgba(32,240,206,0.15), inset 0 1px 0 rgba(255,255,255,0.12);
+  }
+  .menu-item.active::before {
+    content: '';
+    position: absolute;
+    left: -2px; top: 18%; bottom: 18%;
+    width: 3px;
+    background: var(--cyan);
+    border-radius: 100px;
+    box-shadow: 0 0 8px var(--cyan-glow);
+  }
+  .menu-icon {
+    width: 22px; height: 22px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .menu-icon svg { width: 100%; height: 100%; }
+  .menu-item .label { flex: 1; }
+  .menu-item .count {
+    font-family: 'Newsreader', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--text-faint);
+  }
+  .menu-item.active .count { color: var(--cyan); }
+
+  /* streak card in sidebar */
+  .streak-card { padding: 16px 18px; }
+  .streak-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .streak-head .upcase { color: var(--text-faint); }
+  .streak-head .day-num { font-family: 'Bricolage Grotesque', sans-serif; font-size: 28px; font-weight: 700; color: var(--gold); }
+  .streak-head .day-num span { font-size: 13px; color: var(--text-mute); margin-left: 3px; font-weight: 400; }
+  .streak-dots { display: flex; gap: 4px; }
+  .streak-dots span {
+    flex: 1; height: 6px; border-radius: 3px;
+    background: rgba(255,255,255,0.07);
+  }
+  .streak-dots span.on {
+    background: linear-gradient(90deg, var(--gold), var(--gold-2));
+    box-shadow: 0 0 6px var(--gold-glow);
+  }
+  .streak-dots span.today {
+    background: linear-gradient(90deg, var(--cyan), var(--cyan-2));
+    box-shadow: 0 0 8px var(--cyan-glow);
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scaleY(1); }
+    50% { opacity: 0.7; transform: scaleY(1.4); }
+  }
+  .streak-bonus {
+    margin-top: 10px; padding-top: 10px;
+    border-top: 1px solid var(--border-soft);
+    font-size: 11.5px;
+    color: var(--text-mute);
+  }
+  .streak-bonus .num-it { color: var(--cyan); font-size: 13px; }
+
+  /* ==== MAIN AREA ==== */
+  .main {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* HUD bar */
+  .hud-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 22px;
+    border-radius: var(--r-lg);
+  }
+  .hud-left { display: flex; align-items: center; gap: 16px; }
+  .hud-greet {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  .hud-greet b { color: var(--cyan); }
+  .hud-sub { font-family: 'Newsreader', serif; font-style: italic; font-size: 12.5px; color: var(--text-faint); margin-left: 4px; }
+  .hud-right { display: flex; gap: 12px; align-items: center; }
+  .coin-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 7px 14px 7px 8px;
+    border-radius: 100px;
+    background: linear-gradient(135deg, rgba(255,200,92,0.16), rgba(255,200,92,0.04));
+    border: 1px solid rgba(255,200,92,0.32);
+    box-shadow: 0 0 18px rgba(255,200,92,0.16), inset 0 1px 0 rgba(255,255,255,0.1);
+    transition: all .25s;
+  }
+  .coin-pill:hover { transform: translateY(-1px); box-shadow: 0 4px 24px rgba(255,200,92,0.32), inset 0 1px 0 rgba(255,255,255,0.14); }
+  .coin-icon {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--gold-2), var(--gold) 60%, #B47600);
+    display: flex; align-items: center; justify-content: center;
+    color: #4a2a00;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    font-size: 11px;
+    box-shadow: 0 0 8px var(--gold-glow), inset 0 -2px 4px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.5);
+    animation: coinSpin 4s linear infinite;
+  }
+  @keyframes coinSpin {
+    0%, 45%, 55%, 100% { transform: rotateY(0); }
+    50% { transform: rotateY(180deg); }
+  }
+  .coin-pill .num { color: var(--gold-2); font-size: 14.5px; font-weight: 600; }
+  .coin-pill .lbl { font-size: 10.5px; letter-spacing: 0.16em; color: var(--gold); text-transform: uppercase; }
+
+  .ticket-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 12px;
+    border-radius: 100px;
+    background: linear-gradient(135deg, rgba(107,163,255,0.16), rgba(107,163,255,0.04));
+    border: 1px solid rgba(107,163,255,0.32);
+    font-size: 12.5px;
+    color: var(--text);
+  }
+  .ticket-pill .num { color: var(--blue); font-weight: 600; font-size: 14px; }
+  .ticket-pill .upcase { color: rgba(107,163,255,0.8); font-size: 10px; }
+
+  .hud-write {
+    padding: 8px 16px;
+    border-radius: 100px;
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    color: #050818;
+    border: none;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    box-shadow: 0 0 18px var(--cyan-glow), 0 4px 12px rgba(0,0,0,0.3);
+    transition: transform .2s;
+  }
+  .hud-write:hover { transform: translateY(-2px); }
+
+  /* ==== VIEW WRAPPER ==== */
+  .view {
+    display: none;
+    flex-direction: column;
+    gap: 22px;
+    animation: fadeUp .4s cubic-bezier(.4,0,.2,1);
+  }
+  .view.active { display: flex; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ==== HERO QUEST PANEL ==== */
+  .quest-hero {
+    padding: 28px 28px 24px;
+    border-radius: var(--r-xl);
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(32,240,206,0.10), rgba(107,163,255,0.07) 50%, rgba(255,200,92,0.05));
+  }
+  .quest-hero::after {
+    content: '';
+    position: absolute;
+    width: 280px; height: 280px;
+    right: -60px; top: -80px;
+    background: radial-gradient(circle, var(--cyan-glow), transparent 70%);
+    filter: blur(40px);
+    pointer-events: none;
+  }
+  .quest-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 28px;
+    position: relative;
+    z-index: 1;
+  }
+  .quest-headline {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    margin: 0 0 12px;
+  }
+  .quest-headline em {
+    font-family: 'Newsreader', serif;
+    font-style: italic;
+    font-weight: 400;
+    background: linear-gradient(135deg, var(--cyan), var(--gold));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .quest-deck { font-size: 14px; color: var(--text-mute); max-width: 480px; line-height: 1.6; margin-bottom: 20px; }
+  .quest-meta-row { display: flex; gap: 24px; font-size: 12px; color: var(--text-faint); border-top: 1px solid var(--border-soft); padding-top: 14px; }
+  .quest-meta-row b { color: var(--text); font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; }
+
+  /* daily mission list */
+  .mission-list {
+    display: flex; flex-direction: column; gap: 9px;
+  }
+  .mission-list-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 4px;
+  }
+  .mission-list-head .ttl {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700; font-size: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .mission-list-head .ttl::before {
+    content: ''; width: 6px; height: 6px;
+    background: var(--cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--cyan-glow);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .mission-list-head .reset { font-family: 'Newsreader', serif; font-style: italic; font-size: 11.5px; color: var(--text-faint); }
+  .mission {
+    display: grid;
+    grid-template-columns: 24px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 14px;
+    background: var(--glass);
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    transition: all .2s;
+  }
+  .mission:hover { background: var(--glass-2); border-color: var(--border-mid); }
+  .mission.done {
+    background: rgba(80, 227, 164, 0.08);
+    border-color: rgba(80, 227, 164, 0.3);
+  }
+  .check {
+    width: 22px; height: 22px;
+    border-radius: 7px;
+    background: rgba(0,0,0,0.3);
+    border: 1.5px solid var(--border-mid);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    color: transparent;
+    transition: all .2s;
+  }
+  .mission.done .check {
+    background: var(--success);
+    border-color: var(--success);
+    color: #04061A;
+    box-shadow: 0 0 10px rgba(80,227,164,0.5);
+  }
+  .mission .desc { font-size: 13px; }
+  .mission .desc .progress-text { color: var(--text-faint); margin-left: 6px; font-family: 'Newsreader', serif; font-style: italic; }
+  .mission.done .desc { color: var(--text-mute); text-decoration: line-through; text-decoration-color: rgba(255,255,255,0.2); }
+  .mission .reward {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px 3px 4px;
+    border-radius: 100px;
+    background: rgba(255,200,92,0.14);
+    border: 1px solid rgba(255,200,92,0.3);
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--gold-2);
+  }
+  .reward-coin {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--gold-2), var(--gold));
+    flex-shrink: 0;
+  }
+
+  /* ==== CARD GRID ==== */
+  .card-section-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 0 4px;
+    margin-bottom: 4px;
+  }
+  .card-section-head .ttl {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 22px; font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+  .card-section-head .ttl em { font-family: 'Newsreader', serif; font-style: italic; font-weight: 400; color: var(--cyan); }
+  .card-section-head .more {
+    font-size: 12px; color: var(--text-faint);
+    display: flex; align-items: center; gap: 5px;
+  }
+
+  .quest-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .qc {
+    padding: 0;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    transition: transform .35s cubic-bezier(.4,0,.2,1), box-shadow .35s;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    position: relative;
+  }
+  .qc:hover { transform: translateY(-6px) rotateX(2deg); box-shadow: var(--shadow-elevated); }
+  .qc-banner {
+    height: 140px;
+    background: linear-gradient(135deg, rgba(32,240,206,0.18), rgba(107,163,255,0.1));
+    border-bottom: 1px solid var(--border-soft);
+    position: relative;
+    overflow: hidden;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    padding: 14px;
+  }
+  .qc-banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 80% 20%, rgba(32,240,206,0.5), transparent 50%),
+      repeating-linear-gradient(45deg, transparent 0 12px, rgba(255,255,255,0.04) 12px 13px);
+  }
+  .qc-banner.gold { background: linear-gradient(135deg, rgba(255,200,92,0.18), rgba(255,94,142,0.08)); }
+  .qc-banner.gold::before { background: radial-gradient(circle at 80% 20%, rgba(255,200,92,0.5), transparent 50%), repeating-linear-gradient(45deg, transparent 0 12px, rgba(255,255,255,0.04) 12px 13px); }
+  .qc-banner.blue { background: linear-gradient(135deg, rgba(107,163,255,0.2), rgba(32,240,206,0.08)); }
+  .qc-banner.blue::before { background: radial-gradient(circle at 80% 20%, rgba(107,163,255,0.5), transparent 50%), repeating-linear-gradient(45deg, transparent 0 12px, rgba(255,255,255,0.04) 12px 13px); }
+  .qc-banner.magenta { background: linear-gradient(135deg, rgba(255,94,142,0.2), rgba(255,200,92,0.08)); }
+  .qc-banner.magenta::before { background: radial-gradient(circle at 80% 20%, rgba(255,94,142,0.5), transparent 50%), repeating-linear-gradient(45deg, transparent 0 12px, rgba(255,255,255,0.04) 12px 13px); }
+
+  .rarity {
+    position: absolute;
+    top: 12px; left: 12px;
+    padding: 3px 9px;
+    border-radius: 100px;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    z-index: 1;
+  }
+  .rarity.legendary { background: linear-gradient(135deg, var(--gold), var(--magenta)); color: #1a0010; box-shadow: 0 0 14px var(--gold-glow); }
+  .rarity.rare { background: linear-gradient(135deg, var(--cyan), var(--blue)); color: #04061A; box-shadow: 0 0 12px var(--cyan-glow); }
+  .rarity.common { background: rgba(255,255,255,0.16); color: var(--text); border: 1px solid var(--border-mid); }
+  .rarity.sponsor { background: linear-gradient(135deg, var(--gold-2), var(--gold)); color: #1a1300; box-shadow: 0 0 12px var(--gold-glow); }
+
+  .qc-glyph {
+    position: absolute;
+    top: 12px; right: 12px;
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid var(--border-mid);
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(8px);
+    z-index: 1;
+  }
+  .qc-glyph svg { width: 16px; height: 16px; color: var(--text); }
+
+  .qc-reward-badge {
+    position: relative; z-index: 1;
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px 4px 5px;
+    border-radius: 100px;
+    background: rgba(0,0,0,0.45);
+    border: 1px solid rgba(255,200,92,0.4);
+    backdrop-filter: blur(8px);
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--gold-2);
+    box-shadow: 0 0 8px var(--gold-glow);
+  }
+  .qc-time-badge {
+    position: relative; z-index: 1;
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    background: rgba(0,0,0,0.45);
+    border: 1px solid var(--border-mid);
+    backdrop-filter: blur(8px);
+    font-family: 'Newsreader', serif;
+    font-style: italic;
+    font-size: 11.5px;
+    color: var(--text-mute);
+  }
+
+  .qc-body {
+    padding: 18px 18px 16px;
+  }
+  .qc-cat {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 6px;
+  }
+  .qc-title {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 16.5px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.015em;
+    margin: 0 0 8px;
+  }
+  .qc-lede {
+    font-size: 12.5px;
+    color: var(--text-mute);
+    line-height: 1.5;
+    margin-bottom: 14px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .qc-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-soft);
+    font-size: 11px;
+    color: var(--text-faint);
+  }
+  .qc-meta .stats { display: flex; gap: 12px; }
+  .qc-meta .stats span { display: inline-flex; gap: 4px; align-items: center; }
+  .qc-meta .stats .num { color: var(--text-mute); font-size: 12px; }
+
+  /* lead card variant */
+  .qc.lead { grid-column: span 3; }
+  .qc.lead { display: grid; grid-template-columns: 1.1fr 1fr; }
+  .qc.lead .qc-banner { height: auto; min-height: 280px; border-bottom: none; border-right: 1px solid var(--border-soft); }
+  .qc.lead .qc-body { padding: 26px 28px; display: flex; flex-direction: column; justify-content: center; }
+  .qc.lead .qc-title { font-size: 28px; line-height: 1.15; margin-bottom: 12px; }
+  .qc.lead .qc-lede { font-size: 14px; -webkit-line-clamp: 4; margin-bottom: 18px; }
+  .qc.lead .qc-banner-illus {
+    position: absolute;
+    inset: 20px;
+    border-radius: 18px;
+    background:
+      radial-gradient(circle at 25% 30%, rgba(32,240,206,0.4), transparent 40%),
+      radial-gradient(circle at 75% 70%, rgba(255,200,92,0.3), transparent 45%),
+      linear-gradient(135deg, rgba(20,30,80,0.7), rgba(40,15,60,0.7));
+    border: 1px solid var(--border-mid);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .qc.lead .qc-banner-illus::before {
+    content: '';
+    position: absolute;
+    width: 200%; height: 200%;
+    background: repeating-linear-gradient(45deg, transparent 0 20px, rgba(255,255,255,0.03) 20px 21px);
+    animation: bgScroll 30s linear infinite;
+  }
+  @keyframes bgScroll {
+    0% { transform: translate(0,0); }
+    100% { transform: translate(-50%, -50%); }
+  }
+  .qc.lead .glyph-big {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(255,255,255,0.5), transparent 40%),
+      conic-gradient(from 200deg, var(--cyan), var(--blue), var(--magenta), var(--gold), var(--cyan));
+    box-shadow: 0 0 40px var(--cyan-glow), 0 8px 32px rgba(0,0,0,0.5);
+    position: relative;
+    z-index: 1;
+    animation: floatCard 6s ease-in-out infinite;
+  }
+  @keyframes floatCard {
+    0%, 100% { transform: translateY(0) rotateY(0); }
+    50% { transform: translateY(-8px) rotateY(180deg); }
+  }
+  .qc.lead .glyph-big::after {
+    content: '∞';
+    position: absolute;
+    inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    font-size: 56px;
+    color: rgba(5,8,24,0.7);
+  }
+
+  /* ==== ARTICLE VIEW ==== */
+  .article-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+    align-items: start;
+  }
+  .article-main {
+    padding: 32px 36px 28px;
+    border-radius: var(--r-xl);
+  }
+  .article-back {
+    background: var(--glass-2);
+    border: 1px solid var(--border-mid);
+    border-radius: 100px;
+    padding: 7px 14px;
+    font-size: 12px;
+    color: var(--text-mute);
+    margin-bottom: 20px;
+    transition: all .2s;
+  }
+  .article-back:hover { background: var(--glass-3); color: var(--text); }
+
+  .article-tags { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .tag-chip {
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: var(--glass-2);
+    border: 1px solid var(--border-mid);
+    color: var(--text-mute);
+  }
+  .tag-chip.rare { background: linear-gradient(135deg, rgba(32,240,206,0.16), rgba(107,163,255,0.08)); border-color: rgba(32,240,206,0.4); color: var(--cyan); }
+  .tag-chip.legendary { background: linear-gradient(135deg, rgba(255,200,92,0.16), rgba(255,94,142,0.08)); border-color: rgba(255,200,92,0.4); color: var(--gold); }
+
+  .article-title-big {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    margin: 0 0 14px;
+  }
+  .article-title-big em { font-family: 'Newsreader', serif; font-style: italic; font-weight: 400; background: linear-gradient(135deg, var(--cyan), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .article-deck-big {
+    font-size: 16px;
+    color: var(--text-mute);
+    line-height: 1.55;
+    margin-bottom: 22px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .article-byline-big {
+    display: flex; gap: 14px; align-items: center;
+    margin-bottom: 30px;
+    font-size: 12.5px;
+    color: var(--text-mute);
+  }
+  .author-chip {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .author-avatar {
+    width: 32px; height: 32px;
+    border-radius: 10px;
+    background: conic-gradient(from 90deg, var(--cyan), var(--blue), var(--magenta));
+    flex-shrink: 0;
+    position: relative;
+    box-shadow: 0 0 10px var(--cyan-glow);
+  }
+  .author-avatar::after {
+    content: 'K'; position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700;
+    font-size: 14px; color: rgba(5,8,24,0.85);
+  }
+  .author-name-b { color: var(--text); font-weight: 500; }
+  .seed-mark-g {
+    background: linear-gradient(135deg, var(--gold), var(--gold-2));
+    color: #1a1300;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    margin-left: 6px;
+  }
+
+  .article-body-g { font-size: 15.5px; line-height: 1.78; color: var(--text-mute); }
+  .article-body-g p { margin: 0 0 20px; }
+  .article-body-g p strong { color: var(--text); font-weight: 600; }
+  .article-body-g h2 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    margin: 32px 0 14px;
+    color: var(--text);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .article-body-g h2::before {
+    content: '';
+    width: 6px; height: 24px;
+    background: linear-gradient(180deg, var(--cyan), var(--blue));
+    border-radius: 3px;
+    box-shadow: 0 0 8px var(--cyan-glow);
+  }
+  .article-body-g blockquote {
+    margin: 26px 0;
+    padding: 22px 24px;
+    background: var(--glass);
+    border: 1px solid var(--border-soft);
+    border-left: 3px solid var(--cyan);
+    border-radius: 0 var(--r-md) var(--r-md) 0;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--text);
+    letter-spacing: -0.015em;
+    position: relative;
+  }
+  .article-body-g blockquote::before {
+    content: '"';
+    position: absolute;
+    top: 6px; left: 16px;
+    font-family: 'Newsreader', serif;
+    font-size: 64px;
+    color: var(--cyan);
+    opacity: 0.3;
+    line-height: 1;
+  }
+  .article-body-g blockquote .pq {
+    font-family: 'Newsreader', serif; font-style: italic;
+    color: var(--gold-2);
+  }
+
+  /* coupon box (loot card) */
+  .loot-card {
+    margin: 28px 0;
+    padding: 22px;
+    border-radius: var(--r-lg);
+    background:
+      radial-gradient(circle at 80% 20%, rgba(255,200,92,0.16), transparent 50%),
+      linear-gradient(135deg, rgba(255,200,92,0.06), rgba(255,94,142,0.04));
+    border: 1px solid rgba(255,200,92,0.32);
+    box-shadow: 0 0 28px rgba(255,200,92,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .loot-card::before {
+    content: 'LOOT · 학원 보상';
+    position: absolute;
+    top: 12px; right: 14px;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: var(--gold);
+    opacity: 0.7;
+  }
+  .loot-info .academy { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 18px; color: var(--text); margin-bottom: 4px; }
+  .loot-info .desc { font-size: 12.5px; color: var(--text-mute); line-height: 1.5; }
+  .loot-amount-block {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+  }
+  .loot-amount {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 36px;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--gold-2), var(--gold));
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 18px var(--gold-glow);
+  }
+  .loot-supply { font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); }
+
+  /* short response D-track */
+  .response-card {
+    margin: 28px 0 0;
+    padding: 22px;
+    border-radius: var(--r-lg);
+    background: var(--glass);
+    border: 1px solid var(--border-soft);
+  }
+  .response-card .q {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text);
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .response-card .q::before {
+    content: 'Q';
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    color: #04061A;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    box-shadow: 0 0 8px var(--cyan-glow);
+  }
+  .response-card .opts { display: flex; gap: 10px; flex-wrap: wrap; }
+  .response-card .opt {
+    padding: 10px 18px;
+    border-radius: 100px;
+    background: var(--glass-2);
+    border: 1px solid var(--border-mid);
+    color: var(--text);
+    font-size: 13px;
+    transition: all .2s;
+  }
+  .response-card .opt:hover { background: var(--glass-3); transform: translateY(-1px); }
+  .response-card .opt.selected {
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    color: #04061A;
+    border-color: transparent;
+    box-shadow: 0 0 16px var(--cyan-glow);
+    font-weight: 600;
+  }
+  .response-card .note { margin-top: 10px; font-family: 'Newsreader', serif; font-style: italic; font-size: 11.5px; color: var(--text-faint); }
+
+  /* article right rail */
+  .article-side { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 18px; }
+  .progress-card {
+    padding: 18px 20px;
+    border-radius: var(--r-lg);
+    position: relative;
+    overflow: hidden;
+  }
+  .progress-card .head {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+  }
+  .progress-card .head .ttl {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700; font-size: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .progress-card .head .ttl::before {
+    content: ''; width: 6px; height: 6px;
+    background: var(--cyan); border-radius: 50%;
+    box-shadow: 0 0 6px var(--cyan-glow);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  .progress-card .pct {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700; font-size: 22px;
+    color: var(--cyan);
+  }
+  .progress-card.complete .pct { color: var(--success); }
+  .progress-card.complete .head .ttl::before { background: var(--success); box-shadow: 0 0 6px rgba(80,227,164,0.6); }
+
+  .xp-bar-big {
+    height: 12px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 100px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.6);
+    position: relative;
+  }
+  .xp-bar-big .fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--cyan), var(--cyan-2));
+    border-radius: 100px;
+    box-shadow: 0 0 14px var(--cyan-glow);
+    position: relative;
+    transition: width .3s ease-out;
+  }
+  .xp-bar-big .fill::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
+    animation: xpShimmer 2.2s linear infinite;
+  }
+  .xp-bar-big .threshold {
+    position: absolute;
+    left: 80%; top: -3px; bottom: -3px;
+    width: 2px;
+    background: var(--gold);
+    box-shadow: 0 0 6px var(--gold-glow);
+  }
+  .xp-bar-big .threshold::after {
+    content: '80%';
+    position: absolute;
+    left: 5px; top: -16px;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+  }
+  .progress-card.complete .xp-bar-big .fill { background: linear-gradient(90deg, var(--success), #7BFFC8); box-shadow: 0 0 14px rgba(80,227,164,0.5); }
+
+  .progress-stats {
+    display: flex; justify-content: space-between;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--text-faint);
+  }
+  .progress-stats .num { color: var(--text-mute); }
+
+  /* reward preview card */
+  .reward-preview {
+    padding: 16px 18px;
+    border-radius: var(--r-lg);
+    background:
+      radial-gradient(circle at 80% 20%, rgba(255,200,92,0.14), transparent 50%),
+      var(--glass);
+    border: 1px solid rgba(255,200,92,0.24);
+    position: relative;
+    overflow: hidden;
+  }
+  .reward-preview .head {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700; font-size: 13px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  .reward-preview .head span {
+    font-family: 'Newsreader', serif; font-style: italic;
+    font-size: 11px; color: var(--text-faint);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .reward-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px dashed var(--border-soft);
+    font-size: 12.5px;
+  }
+  .reward-row:last-child { border-bottom: none; }
+  .reward-row .l { display: flex; align-items: center; gap: 8px; }
+  .reward-row .l .ico {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .reward-row .l .ico.coin { background: linear-gradient(135deg, var(--gold), #B47600); box-shadow: 0 0 8px var(--gold-glow); }
+  .reward-row .l .ico.tic { background: linear-gradient(135deg, var(--blue), #1E50C8); box-shadow: 0 0 8px var(--blue-glow); }
+  .reward-row .l .ico.cyan { background: linear-gradient(135deg, var(--cyan), #008871); box-shadow: 0 0 8px var(--cyan-glow); }
+  .reward-row .l .ico svg { width: 12px; height: 12px; color: rgba(0,0,0,0.7); }
+  .reward-row .r {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+  }
+  .reward-row .r.gold { color: var(--gold-2); }
+  .reward-row .r.blue { color: var(--blue); }
+  .reward-row .r.cyan { color: var(--cyan); }
+
+  /* ==== INVENTORY (WALLET) VIEW ==== */
+  .balance-row {
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 22px;
+  }
+  .balance-card {
+    padding: 28px;
+    border-radius: var(--r-xl);
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 90% 10%, rgba(255,200,92,0.14), transparent 50%),
+      linear-gradient(135deg, rgba(255,200,92,0.08), rgba(107,163,255,0.04));
+  }
+  .balance-card::after {
+    content: '';
+    position: absolute;
+    width: 200px; height: 200px;
+    right: -40px; top: -60px;
+    background: radial-gradient(circle, var(--gold-glow), transparent 65%);
+    filter: blur(36px);
+    pointer-events: none;
+  }
+  .balance-card .lbl {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .balance-card .lbl::before {
+    content: ''; width: 8px; height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--gold-glow);
+  }
+  .balance-num {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 84px;
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, var(--gold-2), var(--gold), #C8843D);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 32px rgba(255,200,92,0.32);
+    position: relative;
+    z-index: 1;
+  }
+  .balance-num .unit { font-size: 32px; -webkit-text-fill-color: var(--text-mute); margin-left: 8px; vertical-align: 12px; }
+  .balance-equiv {
+    font-family: 'Newsreader', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--text-mute);
+    border-top: 1px solid var(--border-soft);
+    padding-top: 14px;
+    margin-top: 14px;
+  }
+  .balance-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .b-btn {
+    padding: 9px 16px;
+    border-radius: 100px;
+    font-size: 12.5px;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 600;
+    background: var(--glass-2);
+    border: 1px solid var(--border-mid);
+    transition: all .2s;
+  }
+  .b-btn:hover { background: var(--glass-3); transform: translateY(-1px); }
+  .b-btn.primary {
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    color: #04061A;
+    border-color: transparent;
+    box-shadow: 0 0 18px var(--cyan-glow);
+  }
+  .b-btn.locked { color: var(--text-faint); position: relative; cursor: not-allowed; }
+  .b-btn.locked::after {
+    content: 'PHASE 2';
+    position: absolute;
+    top: -8px; right: -6px;
+    background: var(--magenta);
+    color: #2A0010;
+    font-size: 8.5px;
+    padding: 2px 6px;
+    border-radius: 100px;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    box-shadow: 0 0 8px var(--magenta-glow);
+  }
+
+  .ticket-stack {
+    padding: 22px;
+    border-radius: var(--r-xl);
+  }
+  .ticket-stack .head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .ticket-stack .head .ttl {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700; font-size: 14.5px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .ticket-stack .head .ttl::before {
+    content: ''; width: 6px; height: 6px;
+    background: var(--blue);
+    border-radius: 50%; box-shadow: 0 0 6px var(--blue-glow);
+  }
+  .ticket-stack .head .total {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700; font-size: 22px;
+    color: var(--blue);
+  }
+
+  .t-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px dashed var(--border-soft);
+    font-size: 12.5px;
+  }
+  .t-row:last-child { border-bottom: none; }
+  .t-row .academy { font-weight: 500; color: var(--text); font-size: 13px; }
+  .t-row .draw { font-size: 11px; color: var(--text-faint); margin-top: 2px; }
+  .t-row .count {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px 3px 5px;
+    border-radius: 100px;
+    background: linear-gradient(135deg, rgba(107,163,255,0.16), rgba(107,163,255,0.04));
+    border: 1px solid rgba(107,163,255,0.3);
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--blue);
+  }
+  .t-row .count::before {
+    content: ''; width: 6px; height: 6px;
+    background: var(--blue);
+    border-radius: 1.5px;
+    transform: rotate(45deg);
+  }
+
+  .academy-section .head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 14px;
+    padding: 0 4px;
+  }
+  .academy-section .head .ttl {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700; font-size: 22px;
+    letter-spacing: -0.02em;
+  }
+  .academy-section .head .meta {
+    font-family: 'Newsreader', serif; font-style: italic;
+    font-size: 12px; color: var(--text-faint);
+  }
+
+  .chest-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  .chest {
+    padding: 0;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .35s cubic-bezier(.4,0,.2,1);
+    transform-style: preserve-3d;
+  }
+  .chest:hover { transform: translateY(-6px) rotateY(-3deg); }
+  .chest-banner {
+    height: 100px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border-soft);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .chest-banner.bronze { background: linear-gradient(135deg, rgba(180,118,0,0.3), rgba(70,40,0,0.2)); }
+  .chest-banner.silver { background: linear-gradient(135deg, rgba(180,200,220,0.18), rgba(80,100,140,0.2)); }
+  .chest-banner.gold { background: linear-gradient(135deg, rgba(255,200,92,0.3), rgba(255,94,142,0.18)); }
+  .chest-banner.legend { background: linear-gradient(135deg, rgba(255,94,142,0.3), rgba(107,163,255,0.18)); }
+
+  .chest-banner::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(255,255,255,0.18), transparent 50%),
+      repeating-linear-gradient(135deg, transparent 0 8px, rgba(255,255,255,0.04) 8px 9px);
+  }
+  .chest-icon {
+    position: relative; z-index: 1;
+    width: 56px; height: 44px;
+    border-radius: 6px 6px 4px 4px;
+    background: linear-gradient(180deg, var(--gold), #B47600);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 -4px 6px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.4);
+    position: relative;
+  }
+  .chest-icon::before {
+    content: '';
+    position: absolute;
+    top: -8px; left: 0; right: 0;
+    height: 18px;
+    border-radius: 8px 8px 0 0;
+    background: linear-gradient(180deg, var(--gold-2), var(--gold));
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.5);
+  }
+  .chest-icon::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 50%; transform: translateX(-50%);
+    width: 10px; height: 10px;
+    background: #4a2a00;
+    border-radius: 2px;
+    box-shadow: 0 0 0 2px var(--gold), inset 0 -1px 1px rgba(0,0,0,0.4);
+  }
+  .chest-banner.silver .chest-icon { background: linear-gradient(180deg, #C8D4E0, #8090A0); }
+  .chest-banner.silver .chest-icon::before { background: linear-gradient(180deg, #E8EFF5, #C8D4E0); }
+  .chest-banner.bronze .chest-icon { background: linear-gradient(180deg, #B5803D, #6E4818); }
+  .chest-banner.bronze .chest-icon::before { background: linear-gradient(180deg, #DDA76A, #B5803D); }
+  .chest-banner.legend .chest-icon { background: linear-gradient(180deg, var(--magenta), #8E1F3D); animation: legendShimmer 3s ease-in-out infinite; }
+  .chest-banner.legend .chest-icon::before { background: linear-gradient(180deg, #FF8FB0, var(--magenta)); }
+  @keyframes legendShimmer {
+    0%, 100% { box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 -4px 6px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.4), 0 0 14px var(--magenta-glow); }
+    50% { box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 -4px 6px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.4), 0 0 28px var(--magenta-glow); }
+  }
+
+  .chest-rarity {
+    position: absolute;
+    top: 8px; left: 10px;
+    z-index: 2;
+    padding: 2px 7px;
+    border-radius: 100px;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .chest-rarity.bronze { background: rgba(180,118,0,0.7); color: #fff; border: 1px solid rgba(255,200,92,0.4); }
+  .chest-rarity.silver { background: rgba(140,160,180,0.7); color: #fff; border: 1px solid rgba(220,230,240,0.4); }
+  .chest-rarity.gold { background: linear-gradient(135deg, var(--gold), var(--gold-2)); color: #1a1300; box-shadow: 0 0 8px var(--gold-glow); }
+  .chest-rarity.legend { background: linear-gradient(135deg, var(--magenta), var(--gold)); color: #1a0010; box-shadow: 0 0 10px var(--magenta-glow); }
+
+  .chest-body { padding: 16px 18px 14px; }
+  .chest-name {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 600; font-size: 15px;
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+  .chest-area {
+    font-size: 11.5px; color: var(--text-faint);
+    margin-bottom: 12px;
+    font-family: 'Newsreader', serif; font-style: italic;
+  }
+  .chest-loot {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-soft);
+  }
+  .chest-loot .amount {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--gold-2);
+    text-shadow: 0 0 10px var(--gold-glow);
+  }
+  .chest-loot .left {
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    font-family: 'Bricolage Grotesque', sans-serif;
+  }
+  .pool-bar-g {
+    height: 5px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 100px;
+    margin-top: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border-soft);
+  }
+  .pool-bar-g .fill {
+    height: 100%;
+    border-radius: 100px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-2));
+    box-shadow: 0 0 8px var(--gold-glow);
+  }
+
+  /* ==== PROFILE VIEW ==== */
+  .profile-row { display: grid; grid-template-columns: 1fr 1.6fr; gap: 22px; }
+
+  .char-sheet {
+    padding: 28px 28px 24px;
+    border-radius: var(--r-xl);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(32,240,206,0.18), transparent 60%),
+      var(--glass);
+  }
+  .char-sheet .lbl {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 14px;
+  }
+  .gauge-3d {
+    width: 220px; height: 220px;
+    margin: 0 auto 18px;
+    position: relative;
+    filter: drop-shadow(0 0 20px var(--cyan-glow));
+  }
+  .gauge-3d svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .gauge-3d .bg-c { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 14; }
+  .gauge-3d .fg-c { fill: none; stroke: url(#trustGrad); stroke-width: 14; stroke-linecap: round; transition: stroke-dashoffset 1.6s cubic-bezier(.4,0,.2,1); }
+  .gauge-3d .center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .gauge-3d .center b {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 56px;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, var(--cyan), var(--cyan-2));
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+    line-height: 1;
+  }
+  .gauge-3d .center span {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-top: 8px;
+  }
+  .char-tier {
+    display: inline-flex; gap: 6px; align-items: center;
+    padding: 6px 14px;
+    border-radius: 100px;
+    background: linear-gradient(135deg, var(--cyan), var(--blue));
+    color: #04061A;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    margin-bottom: 12px;
+    box-shadow: 0 0 18px var(--cyan-glow);
+  }
+  .char-meta { font-size: 12.5px; color: var(--text-mute); border-top: 1px solid var(--border-soft); padding-top: 14px; line-height: 1.55; }
+  .char-meta .key {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    color: var(--cyan);
+  }
+
+  .stat-tiles-g {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+  }
+  .stat-tile-g {
+    padding: 18px 20px;
+    border-radius: var(--r-lg);
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-tile-g .lbl {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 10px;
+  }
+  .stat-num-big {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 38px;
+    line-height: 1;
+    letter-spacing: -0.025em;
+    color: var(--text);
+  }
+  .stat-num-big .unit {
+    font-family: 'Newsreader', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--cyan);
+    margin-left: 4px;
+    font-weight: 400;
+  }
+  .stat-num-big .unit.gold { color: var(--gold); }
+  .stat-tile-g .delta-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+  .stat-tile-g .delta {
+    font-family: 'Newsreader', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: var(--success);
+  }
+  .stat-tile-g .delta.warn { color: var(--warn); }
+  .stat-tile-g .spark-g {
+    display: flex; align-items: flex-end; gap: 2px;
+    height: 28px; width: 80px;
+  }
+  .stat-tile-g .spark-g span {
+    flex: 1; min-width: 4px;
+    border-radius: 2px 2px 0 0;
+    background: linear-gradient(180deg, var(--cyan), rgba(32,240,206,0.2));
+    box-shadow: 0 0 4px var(--cyan-glow);
+  }
+  .stat-tile-g.gold .spark-g span { background: linear-gradient(180deg, var(--gold), rgba(255,200,92,0.2)); box-shadow: 0 0 4px var(--gold-glow); }
+
+  /* skills section (stat bars) */
+  .skills-card { padding: 22px; border-radius: var(--r-lg); }
+  .skills-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border-soft); }
+  .skills-head .ttl {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700; font-size: 16px;
+  }
+  .skills-head .meta {
+    font-family: 'Newsreader', serif; font-style: italic;
+    font-size: 11.5px; color: var(--text-faint);
+  }
+  .skill-row { display: grid; grid-template-columns: 110px 1fr auto; gap: 14px; align-items: center; padding: 9px 0; }
+  .skill-row .name { font-size: 13px; color: var(--text); font-weight: 500; }
+  .skill-bar {
+    height: 8px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 100px;
+    border: 1px solid rgba(255,255,255,0.06);
+    overflow: hidden;
+    position: relative;
+  }
+  .skill-bar .fill {
+    height: 100%; border-radius: 100px;
+    box-shadow: 0 0 8px currentColor;
+    width: 0%;
+    transition: width 1.4s cubic-bezier(.4,0,.2,1);
+  }
+  .skill-bar .fill.cyan { background: linear-gradient(90deg, var(--cyan), var(--cyan-2)); color: var(--cyan); }
+  .skill-bar .fill.gold { background: linear-gradient(90deg, var(--gold), var(--gold-2)); color: var(--gold); }
+  .skill-bar .fill.blue { background: linear-gradient(90deg, var(--blue), #A8C8FF); color: var(--blue); }
+  .skill-bar .fill.magenta { background: linear-gradient(90deg, var(--magenta), #FFA0BD); color: var(--magenta); }
+  .skill-pts {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700; font-size: 14px;
+    width: 50px; text-align: right;
+    color: var(--text);
+  }
+
+  /* my posts list */
+  .my-posts-g { padding: 22px; border-radius: var(--r-lg); }
+  .my-posts-g .head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 14px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .my-posts-g .head .ttl {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700; font-size: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .my-posts-g .head .ttl::before {
+    content: ''; width: 6px; height: 6px;
+    background: var(--magenta); border-radius: 50%;
+    box-shadow: 0 0 6px var(--magenta-glow);
+  }
+  .my-posts-g .head .meta { font-family: 'Newsreader', serif; font-style: italic; font-size: 11.5px; color: var(--text-faint); }
+
+  .post-row-g {
+    display: grid;
+    grid-template-columns: 36px 1fr 80px 90px;
+    gap: 14px; align-items: center;
+    padding: 13px 0;
+    border-bottom: 1px dashed var(--border-soft);
+  }
+  .post-row-g:last-child { border-bottom: none; }
+  .post-row-g .idx {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--text-faint);
+    text-align: center;
+  }
+  .post-row-g h4 { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 14px; margin: 0 0 3px; letter-spacing: -0.01em; }
+  .post-row-g .submeta { font-size: 11px; color: var(--text-faint); font-family: 'Newsreader', serif; font-style: italic; }
+  .post-row-g .reads, .post-row-g .earnings { text-align: right; }
+  .post-row-g .reads .n, .post-row-g .earnings .n {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700; font-size: 16px;
+  }
+  .post-row-g .reads .n { color: var(--blue); }
+  .post-row-g .earnings .n { color: var(--gold-2); }
+  .post-row-g .reads .lbl, .post-row-g .earnings .lbl {
+    font-size: 9.5px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--text-faint);
+    font-family: 'Bricolage Grotesque', sans-serif;
+  }
+
+  /* activity log */
+  .log-card { padding: 22px; border-radius: var(--r-lg); }
+  .log-card .head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 14px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .log-card .head .ttl {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700; font-size: 16px;
+  }
+  .log-card .head .meta { font-family: 'Newsreader', serif; font-style: italic; font-size: 11.5px; color: var(--text-faint); }
+  .log-row {
+    display: grid;
+    grid-template-columns: 90px 1fr 80px;
+    gap: 14px; align-items: center;
+    padding: 11px 0;
+    border-bottom: 1px dashed var(--border-soft);
+    font-size: 13px;
+  }
+  .log-row:last-child { border-bottom: none; }
+  .log-row .when {
+    font-family: 'Newsreader', serif; font-style: italic;
+    color: var(--text-faint); font-size: 12px;
+  }
+  .log-row .gain {
+    text-align: right;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    color: var(--gold-2);
+  }
+  .log-row .gain.minus { color: var(--text-faint); }
+  .log-row .gain.cyan { color: var(--cyan); }
+
+  /* ==== TOAST ==== */
+  .toast-g {
+    position: fixed;
+    top: 32px; right: 32px;
+    padding: 16px 22px 14px 64px;
+    border-radius: var(--r-md);
+    background: var(--bg-mid);
+    border: 1px solid rgba(255,200,92,0.4);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 28px var(--gold-glow), inset 0 1px 0 rgba(255,255,255,0.1);
+    z-index: 200;
+    transform: translateX(140%);
+    transition: transform .55s cubic-bezier(.4,0,.2,1);
+    min-width: 280px;
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+  }
+  .toast-g.show { transform: translateX(0); }
+  .toast-g::before {
+    content: '';
+    position: absolute;
+    left: 18px; top: 50%; transform: translateY(-50%);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, var(--gold-2), var(--gold) 60%, #B47600);
+    box-shadow: 0 0 18px var(--gold-glow), inset 0 -2px 4px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.5);
+    animation: coinSpin 4s linear infinite;
+  }
+  .toast-g .lbl {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 9.5px;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .toast-g .big {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 1;
+  }
+  .toast-g .big .plus { color: var(--cyan); margin-right: 4px; }
+  .toast-g .big .num { color: var(--gold-2); }
+  .toast-g .desc {
+    font-size: 11.5px; color: var(--text-mute);
+    margin-top: 6px; line-height: 1.4;
+  }
+
+  /* ==== RESPONSIVE ==== */
+  @media (max-width: 1180px) {
+    .quest-cards { grid-template-columns: repeat(2, 1fr); }
+    .qc.lead { grid-column: span 2; }
+    .article-grid { grid-template-columns: 1fr; }
+    .article-side { position: static; }
+  }
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; padding: 14px; gap: 14px; }
+    .sidebar { position: static; max-height: none; flex-direction: row; flex-wrap: wrap; gap: 12px; }
+    .sidebar > * { flex: 1; min-width: 240px; }
+    .sidebar .menu { width: 100%; flex-basis: 100%; }
+    .menu { display: flex; gap: 6px; padding: 8px; }
+    .menu-item { flex: 1; justify-content: center; }
+    .menu-item .label { display: none; }
+    .quest-grid { grid-template-columns: 1fr; }
+    .quest-cards { grid-template-columns: 1fr; }
+    .qc.lead { grid-column: span 1; grid-template-columns: 1fr; }
+    .qc.lead .qc-banner { min-height: 200px; border-right: none; border-bottom: 1px solid var(--border-soft); }
+    .balance-row { grid-template-columns: 1fr; }
+    .chest-grid { grid-template-columns: repeat(2, 1fr); }
+    .profile-row { grid-template-columns: 1fr; }
+    .balance-num { font-size: 56px; }
+    .quest-headline, .article-title-big { font-size: 28px; }
+  }
+  @media (max-width: 540px) {
+    .chest-grid { grid-template-columns: 1fr; }
+    .stat-tiles-g { grid-template-columns: 1fr; }
+    .post-row-g { grid-template-columns: 28px 1fr; gap: 8px; }
+    .post-row-g .reads, .post-row-g .earnings { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-mesh"></div>
+<div class="bg-grid"></div>
+<div class="bg-noise"></div>
+<div class="particles" id="particles"></div>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="trustGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#20F0CE"/>
+      <stop offset="50%" stop-color="#5BFFE0"/>
+      <stop offset="100%" stop-color="#6BA3FF"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<div class="app">
+
+  <!-- ============== SIDEBAR ============== -->
+  <aside class="sidebar">
+
+    <div class="glass brand">
+      <div class="logo-row">
+        <div class="logo-mark">정</div>
+        <div>
+          <div class="ko">JEONG<b>DOK</b></div>
+          <div class="en">Learning RPG · 분당·판교</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass char-card">
+      <div class="char-top">
+        <div class="char-avatar"></div>
+        <div class="char-info">
+          <div class="char-name">서연 학부모</div>
+          <div class="char-title">Devoted Reader</div>
+        </div>
+      </div>
+      <div class="lvl-badge">
+        <svg viewBox="0 0 12 12" fill="currentColor"><path d="M6 0L7.5 4L12 4.5L8.5 7.5L9.5 12L6 9.5L2.5 12L3.5 7.5L0 4.5L4.5 4L6 0Z"/></svg>
+        LV. 12
+      </div>
+      <div class="xp-section">
+        <div class="xp-label">
+          <span class="upcase" style="color: var(--text-faint);">XP TO LV. 13</span>
+          <span class="num-it">2,840 / 4,000</span>
+        </div>
+        <div class="xp-bar">
+          <div class="xp-fill" style="width: 71%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass menu">
+      <button class="menu-item active" data-view="feed">
+        <span class="menu-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M3 12L12 4L21 12V20A1 1 0 0 1 20 21H15V14H9V21H4A1 1 0 0 1 3 20V12Z" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="label">홈 · 오늘의 정독</span>
+        <span class="count">12</span>
+      </button>
+      <button class="menu-item" data-view="article">
+        <span class="menu-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M5 4H17A2 2 0 0 1 19 6V20L12 16L5 20V6A2 2 0 0 1 7 4Z" stroke-linejoin="round"/>
+            <path d="M9 8H15M9 11H13" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="label">퀘스트 · 글 상세</span>
+        <span class="count">3</span>
+      </button>
+      <button class="menu-item" data-view="wallet">
+        <span class="menu-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M4 7H20A1 1 0 0 1 21 8V18A1 1 0 0 1 20 19H4A1 1 0 0 1 3 18V6A1 1 0 0 1 4 5H17V8" stroke-linejoin="round"/>
+            <circle cx="17" cy="13" r="1.5" fill="currentColor"/>
+          </svg>
+        </span>
+        <span class="label">인벤토리 · 지갑</span>
+        <span class="count">14</span>
+      </button>
+      <button class="menu-item" data-view="me">
+        <span class="menu-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 21A8 8 0 0 1 20 21" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="label">캐릭터 · 마이</span>
+        <span class="count">→</span>
+      </button>
+    </div>
+
+    <div class="glass streak-card">
+      <div class="streak-head">
+        <span class="upcase">Reading Streak</span>
+        <span class="day-num"><span class="num">14</span><span>days</span></span>
+      </div>
+      <div class="streak-dots">
+        <span class="on"></span><span class="on"></span><span class="on"></span>
+        <span class="on"></span><span class="on"></span><span class="on"></span>
+        <span class="on"></span><span class="on"></span><span class="on"></span>
+        <span class="on"></span><span class="on"></span><span class="on"></span>
+        <span class="on"></span><span class="today"></span>
+      </div>
+      <div class="streak-bonus">7일 더 정독 시 <span class="num-it">×1.18 → ×1.25</span> 보너스 해금</div>
+    </div>
+
+  </aside>
+
+  <!-- ============== MAIN ============== -->
+  <main class="main">
+
+    <header class="glass hud-bar">
+      <div class="hud-left">
+        <span class="hud-greet">안녕하세요, <b>서연 학부모</b>님 <span class="hud-sub">— good morning, reader.</span></span>
+      </div>
+      <div class="hud-right">
+        <div class="ticket-pill"><span class="upcase">Tickets</span> <span class="num">14</span></div>
+        <div class="coin-pill">
+          <div class="coin-icon">P</div>
+          <span class="lbl">Coin</span>
+          <span class="num" id="balanceTop">2,840</span>
+        </div>
+        <button class="hud-write">＋ 새 퀘스트 작성</button>
+      </div>
+    </header>
+
+    <!-- ============== FEED ============== -->
+    <section class="view active" id="view-feed">
+
+      <div class="glass quest-hero">
+        <div class="quest-grid">
+          <div>
+            <h1 class="quest-headline">
+              오늘 정독한 시간,<br>
+              <em>12분 47초.</em>
+            </h1>
+            <p class="quest-deck">
+              분당·판교 학부모 1,043명이 오늘 평균 11분을 정독했습니다.
+              본문의 <b>80%</b>까지 읽으면, 학원이 직접 발행한 보물상자(쿠폰 응모권)가 인벤토리에 적립됩니다.
+              — <span style="font-family: 'Newsreader', serif; font-style: italic; color: var(--cyan);">광고가 아니라, 학부모가 학원에 이르는 가장 짧은 길.</span>
+            </p>
+            <div class="quest-meta-row">
+              <span><span class="upcase" style="color: var(--text-faint);">Active Writers</span> &nbsp; <b class="num">14</b></span>
+              <span><span class="upcase" style="color: var(--text-faint);">New Quests</span> &nbsp; <b class="num">26</b></span>
+              <span><span class="upcase" style="color: var(--text-faint);">Loot Pool</span> &nbsp; <b class="num">₩2,840K</b></span>
+            </div>
+          </div>
+
+          <div class="mission-list">
+            <div class="mission-list-head">
+              <span class="ttl">Daily Missions</span>
+              <span class="reset">resets in 11h 13m</span>
+            </div>
+            <div class="mission done">
+              <span class="check">✓</span>
+              <span class="desc">3편 정독하기 <span class="progress-text">3 / 3</span></span>
+              <span class="reward"><span class="reward-coin"></span>+50</span>
+            </div>
+            <div class="mission done">
+              <span class="check">✓</span>
+              <span class="desc">학원 후기 1편 정독 <span class="progress-text">1 / 1</span></span>
+              <span class="reward"><span class="reward-coin"></span>+30</span>
+            </div>
+            <div class="mission">
+              <span class="check"></span>
+              <span class="desc">시드 작성자 글 1편 정독 <span class="progress-text">0 / 1</span></span>
+              <span class="reward"><span class="reward-coin"></span>+75</span>
+            </div>
+            <div class="mission">
+              <span class="check"></span>
+              <span class="desc">글 1편 작성 <span class="progress-text">0 / 1</span></span>
+              <span class="reward"><span class="reward-coin"></span>+200</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-section-head">
+        <div class="ttl">오늘의 추천 퀘스트 <em>— Selected for you</em></div>
+        <div class="more">전체 보기 →</div>
+      </div>
+
+      <div class="quest-cards">
+
+        <article class="qc lead glass" onclick="goToArticle()">
+          <div class="qc-banner">
+            <div class="rarity legendary">Legendary</div>
+            <div class="qc-glyph">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 4H17A2 2 0 0 1 19 6V20L12 16L5 20V6A2 2 0 0 1 7 4Z" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="qc-banner-illus">
+              <div class="glyph-big"></div>
+            </div>
+            <span class="qc-time-badge" style="bottom: 14px; left: 14px; position: absolute;">5'40" read</span>
+            <span class="qc-reward-badge" style="bottom: 14px; right: 14px; position: absolute;"><span class="reward-coin"></span>+75</span>
+          </div>
+          <div class="qc-body">
+            <div class="qc-cat">입시·진학 · Seed Writer</div>
+            <h3 class="qc-title">분당 수학학원 셋, 7개월간 직접 보낸 후기 — 정상·청솔·김포</h3>
+            <p class="qc-lede">중3 자녀를 분당 1군 수학학원 셋에 한 학기씩 보낸 학부모의 비교 기록. 분반·코칭·질문 응대 속도를 7개월간 추적했다. 같은 1군이라도 작동 방식이 매우 달랐다.</p>
+            <div class="qc-meta">
+              <div class="stats">
+                <span><span class="num">2,847</span> reads</span>
+                <span>avg <span class="num">3'42"</span></span>
+                <span class="num" style="color: var(--gold-2);">×14 loot</span>
+              </div>
+              <span style="color: var(--cyan); font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600;">Start →</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="qc glass" onclick="goToArticle()">
+          <div class="qc-banner blue">
+            <div class="rarity rare">Rare</div>
+            <div class="qc-glyph">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7V12L15 14" stroke-linecap="round"/></svg>
+            </div>
+            <span class="qc-time-badge" style="bottom: 14px; left: 14px; position: absolute;">2'10" read</span>
+            <span class="qc-reward-badge" style="bottom: 14px; right: 14px; position: absolute;"><span class="reward-coin"></span>+50</span>
+          </div>
+          <div class="qc-body">
+            <div class="qc-cat">학원 후기 · blue_mom</div>
+            <h3 class="qc-title">판교 미술학원 둘 — 도담 vs 키움, 결국 한 곳을 골랐다</h3>
+            <p class="qc-lede">상담 분위기, 작품 결과물, 학부모 모임 분위기까지 직접 비교한 솔직 후기.</p>
+            <div class="qc-meta">
+              <div class="stats">
+                <span><span class="num">412</span> reads</span>
+                <span class="num" style="color: var(--gold-2);">×6 loot</span>
+              </div>
+              <span style="color: var(--cyan); font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600;">Start →</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="qc glass" onclick="goToArticle()">
+          <div class="qc-banner gold">
+            <div class="rarity sponsor">Sponsor</div>
+            <div class="qc-glyph">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 9L12 4L21 9L12 14L3 9Z" stroke-linejoin="round"/><path d="M3 9V18M21 9V18M12 14V21" stroke-linecap="round"/></svg>
+            </div>
+            <span class="qc-time-badge" style="bottom: 14px; left: 14px; position: absolute;">1'30" read</span>
+            <span class="qc-reward-badge" style="bottom: 14px; right: 14px; position: absolute;"><span class="reward-coin"></span>+40</span>
+          </div>
+          <div class="qc-body">
+            <div class="qc-cat">광고 · 정상어학원</div>
+            <h3 class="qc-title">2026 여름방학 영어 집중반 — 정상어학원 분당 본관</h3>
+            <p class="qc-lede">예비 중2~3 영어 내신·수능 통합 과정. 6월 마지막 주 개강. 등록 시 진단 테스트 무료.</p>
+            <div class="qc-meta">
+              <div class="stats">
+                <span><span class="num">189</span> reads</span>
+                <span class="num" style="color: var(--gold-2);">×42 loot</span>
+              </div>
+              <span style="color: var(--cyan); font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600;">Start →</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="qc glass" onclick="goToArticle()">
+          <div class="qc-banner magenta">
+            <div class="rarity legendary">Legendary</div>
+            <div class="qc-glyph">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4H21V8H17V20H7V8H3V4Z" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="qc-time-badge" style="bottom: 14px; left: 14px; position: absolute;">5'23" read</span>
+            <span class="qc-reward-badge" style="bottom: 14px; right: 14px; position: absolute;"><span class="reward-coin"></span>+90</span>
+          </div>
+          <div class="qc-body">
+            <div class="qc-cat">입시·진학 · Seed Writer</div>
+            <h3 class="qc-title">2027학년도 자사고·외고 입시 일정 정리 — 분당 학부모가 챙길 8가지</h3>
+            <p class="qc-lede">자사고 폐지 논의가 다시 미뤄지면서 2027 입시는 사실상 현행 체제 유지. 5월부터 12월까지 분당·판교 학부모가 놓치지 말아야 할 시점들을 한 표로.</p>
+            <div class="qc-meta">
+              <div class="stats">
+                <span><span class="num">1,247</span> reads</span>
+                <span><span class="num">312</span> saves</span>
+              </div>
+              <span style="color: var(--cyan); font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600;">Start →</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="qc glass" onclick="goToArticle()">
+          <div class="qc-banner">
+            <div class="rarity common">Common</div>
+            <div class="qc-glyph">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2L4 7V12C4 16 7 20 12 22C17 20 20 16 20 12V7L12 2Z" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="qc-time-badge" style="bottom: 14px; left: 14px; position: absolute;">1'40" read</span>
+            <span class="qc-reward-badge" style="bottom: 14px; right: 14px; position: absolute;"><span class="reward-coin"></span>+50</span>
+          </div>
+          <div class="qc-body">
+            <div class="qc-cat">교육 일반 · summer_dad</div>
+            <h3 class="qc-title">초3 영어, 결국 언제 시작해야 할까?</h3>
+            <p class="qc-lede">너무 일찍 시작하면 흥미를 잃고, 늦으면 따라잡기 어렵다. 6년간 두 아이를 키우며 본 패턴.</p>
+            <div class="qc-meta">
+              <div class="stats">
+                <span><span class="num">534</span> reads</span>
+              </div>
+              <span style="color: var(--cyan); font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600;">Start →</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="qc glass" onclick="goToArticle()">
+          <div class="qc-banner blue">
+            <div class="rarity rare">Rare</div>
+            <div class="qc-glyph">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 17L9 11L13 15L21 7" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 7H21V14" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="qc-time-badge" style="bottom: 14px; left: 14px; position: absolute;">3'12" read</span>
+            <span class="qc-reward-badge" style="bottom: 14px; right: 14px; position: absolute;"><span class="reward-coin"></span>+75</span>
+          </div>
+          <div class="qc-body">
+            <div class="qc-cat">입시·진학 · Seed Writer</div>
+            <h3 class="qc-title">내신 vs 수능 — 분당 일반고에서 비중이 어떻게 변하나</h3>
+            <p class="qc-lede">2024년 이후 분당 일반고 입시 결과 데이터를 추적해보니, 내신 비중이 다시 올라가고 있다.</p>
+            <div class="qc-meta">
+              <div class="stats">
+                <span><span class="num">982</span> reads</span>
+              </div>
+              <span style="color: var(--cyan); font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600;">Start →</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ============== ARTICLE ============== -->
+    <section class="view" id="view-article">
+      <div class="article-grid">
+
+        <article class="glass article-main">
+          <button class="article-back" onclick="switchView('feed')">← 퀘스트 목록</button>
+
+          <div class="article-tags">
+            <span class="tag-chip legendary">Legendary</span>
+            <span class="tag-chip rare">Seed Writer</span>
+            <span class="tag-chip">입시·진학</span>
+            <span class="tag-chip">5'40" read</span>
+          </div>
+
+          <h1 class="article-title-big">분당 수학학원 셋, 7개월간 직접 보낸 후기 — <em>정상 · 청솔 · 김포</em></h1>
+          <p class="article-deck-big">중3 자녀를 분당 1군 수학학원 셋에 한 학기씩 직접 보낸 학부모의 비교 기록. 분반·코칭·질문 응대 속도를 7개월간 추적했다.</p>
+
+          <div class="article-byline-big">
+            <div class="author-chip">
+              <div class="author-avatar"></div>
+              <span><span class="author-name-b">김지훈</span><span class="seed-mark-g">SEED</span></span>
+            </div>
+            <span style="font-family: 'Newsreader', serif; font-style: italic;">전직 입시컨설턴트 · 분당 12년</span>
+            <span style="font-family: 'Newsreader', serif; font-style: italic;">2026.05.07</span>
+          </div>
+
+          <div class="article-body-g" id="articleBody">
+            <p>
+              분당 1군 수학학원이라 불리는 셋 — 정상수학, 청솔수학, 김포입시반 — 은 같은 '분당 1군'이라는 평판을 공유하지만, 한 학기씩 직접 보내본 결과 작동 방식이 매우 달랐다. 어떤 아이에게는 정상이, 어떤 아이에게는 김포가 맞는다.
+              본 글은 중3 자녀를 1학기 정상, 2학기 청솔, 3학기 김포에 보낸 7개월간의 직접 관찰 기록이다.
+            </p>
+
+            <p>
+              가장 먼저 눈에 띈 차이는 <strong>분반 정밀도</strong>다. 정상은 진단 테스트 점수와 직전 시험 결과를 합산해 6단계 분반을 운영하는데, 한 단계 안에서도 상위·중위·하위로 다시 나뉜다. 청솔은 4단계, 김포는 사실상 3단계다. 분반이 촘촘할수록 또래 진도 압박이 강하지만, 그만큼 학생이 자기 위치를 명확히 안다.
+            </p>
+
+            <blockquote>
+              분반이 6단계인 학원에선 아이가 자기 위치를 알고, 4단계인 학원에선 학원이 아이의 위치를 정한다. <span class="pq">전자는 동기를, 후자는 안전감을 만든다.</span>
+            </blockquote>
+
+            <p>
+              두 번째 차이는 <strong>질문 응대 속도</strong>다. 정상은 자기주도학습실에서 질문하면 평균 12분 안에 조교가 온다. 청솔은 35분, 김포는 8분이다. 단, 김포는 조교 수가 적어 질문이 길면 다음 학생이 한참 기다린다. 평균 8분이 빠른 것은 맞지만, 깊이 있는 질문에는 정상이 더 적합했다.
+            </p>
+
+            <h2>한 달에 한 번, 학부모는 무엇을 보았나</h2>
+
+            <p>
+              세 학원 모두 학부모 상담을 월 1회 진행하지만 결이 다르다. <strong>정상</strong>은 데이터를 보여준다 — 분반 변동 확률, 같은 분반 평균 진도율, 약점 단원의 통계. <strong>청솔</strong>은 강사의 정성 평가에 가깝다. "이 아이는 응용 문제에서 사고가 끊깁니다" 같은 식의 진단. <strong>김포</strong>는 학부모가 묻는 만큼 답한다. 답이 나쁘다는 게 아니라, 학부모가 잘 모르면 정보를 적게 받는 구조다.
+            </p>
+
+            <p>
+              결과적으로 정상은 학부모가 데이터에 익숙한 가정에 잘 맞고, 청솔은 학부모가 강사를 신뢰하는 가정에 맞으며, 김포는 학부모가 직접 챙기는 가정에 맞는다. 같은 1군이라도 가정의 운영 스타일과 짝이 맞아야 효율이 나온다.
+            </p>
+
+            <div class="loot-card">
+              <div class="loot-info">
+                <div class="academy">정상어학원 — 분당 본관</div>
+                <div class="desc">이 글을 80% 정독하면 응모권 1장이 자동 적립됩니다.<br>매주 일요일 자정 추첨 · 6/1 개강반 수강료 차감권.</div>
+              </div>
+              <div class="loot-amount-block">
+                <div class="loot-amount">₩50,000</div>
+                <div class="loot-supply">남은 풀 ×42</div>
+              </div>
+            </div>
+
+            <h2>그래서 누구에게 무엇이 맞나</h2>
+
+            <p>
+              세 학원의 한 학기 학원비는 비슷하다 (월 65만~78만 원). 가격이 결정 요인이 아니다. 결정 요인은 셋이다 — 분반의 촘촘함, 질문 응대 속도, 학부모 상담의 결.
+              같은 학원을 다녀도 같은 결과가 나오지 않는 이유는 학원의 강도가 아니라 가정의 페이스와 맞느냐에 달려 있다.
+            </p>
+
+            <p>
+              7개월의 결론을 한 줄로 줄이면 — <strong>분당 1군 수학학원의 차이는 강사가 아니라 운영 시스템에 있다.</strong> 학부모가 어떤 시스템을 잘 다루는지 먼저 보고, 그에 맞는 학원을 고르는 것이 가장 효율적이었다.
+            </p>
+
+            <div class="response-card">
+              <div class="q">이 글이 도움됐나요?</div>
+              <div class="opts">
+                <button class="opt" onclick="selectOpt(this, true)">예</button>
+                <button class="opt" onclick="selectOpt(this, false)">아니오</button>
+                <button class="opt" onclick="selectOpt(this, false)">잘 모르겠음</button>
+              </div>
+              <div class="note">짧은 글에는 능동 응답이 필요합니다 (PoE D-track). 이 글은 1,000자 이상이라 응답 없이도 정독으로 인정됩니다 — 위 응답은 콘텐츠 품질 시그널로만 사용됩니다.</div>
+            </div>
+
+          </div>
+        </article>
+
+        <aside class="article-side">
+
+          <div class="glass progress-card" id="progressCard">
+            <div class="head">
+              <span class="ttl">Reading Quest</span>
+              <span class="pct" id="poePct">0%</span>
+            </div>
+            <div class="xp-bar-big">
+              <div class="fill" id="poeFill"></div>
+              <div class="threshold"></div>
+            </div>
+            <div class="progress-stats">
+              <span><span class="num" id="poeTime">0</span>초 체류</span>
+              <span id="poeStatus">측정 중…</span>
+            </div>
+          </div>
+
+          <div class="glass reward-preview">
+            <div class="head">Quest Reward <span>완주 시 적립</span></div>
+            <div class="reward-row">
+              <div class="l">
+                <span class="ico coin">
+                  <svg viewBox="0 0 12 12" fill="currentColor"><path d="M6 1L7.5 4.5L11 5L8.5 7.5L9 11L6 9L3 11L3.5 7.5L1 5L4.5 4.5L6 1Z"/></svg>
+                </span>
+                <span>Coin (P)</span>
+              </div>
+              <div class="r gold">+75</div>
+            </div>
+            <div class="reward-row">
+              <div class="l">
+                <span class="ico tic">
+                  <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="3" width="8" height="6" rx="1"/></svg>
+                </span>
+                <span>응모권 — 정상어학원</span>
+              </div>
+              <div class="r blue">+1장</div>
+            </div>
+            <div class="reward-row">
+              <div class="l">
+                <span class="ico cyan">
+                  <svg viewBox="0 0 12 12" fill="currentColor"><circle cx="6" cy="6" r="3"/></svg>
+                </span>
+                <span>XP</span>
+              </div>
+              <div class="r cyan">+90</div>
+            </div>
+          </div>
+
+          <div class="glass" style="padding: 16px 18px;">
+            <div style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 13px; margin-bottom: 8px;">Author Reward</div>
+            <div style="font-size: 12.5px; color: var(--text-mute); line-height: 1.5;">
+              내가 정독을 완료하면 <strong style="color: var(--gold-2);">작성자 김지훈</strong>에게도 정독자 P의 70% (<span class="num-it" style="color: var(--gold);">+52 P</span>)가 자동 분배됩니다.
+            </div>
+          </div>
+
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============== WALLET / INVENTORY ============== -->
+    <section class="view" id="view-wallet">
+
+      <div class="card-section-head">
+        <div class="ttl">인벤토리 <em>— Wallet & Loot</em></div>
+        <div class="more">정산 매주 일요일 자정</div>
+      </div>
+
+      <div class="balance-row">
+        <div class="glass balance-card">
+          <div class="lbl">Coin Balance · P</div>
+          <div class="balance-num num">2,840<span class="unit">P</span></div>
+          <div class="balance-equiv">≈ ₩2,840 · 학원 쿠폰 환산 시 ₩4,260 <span style="color: var(--cyan);">(×1.5)</span></div>
+          <div class="balance-actions">
+            <button class="b-btn primary">쿠폰 응모하기</button>
+            <button class="b-btn">내역 보기</button>
+            <button class="b-btn locked">현금 환전</button>
+          </div>
+        </div>
+
+        <div class="glass ticket-stack">
+          <div class="head">
+            <span class="ttl">Active Tickets</span>
+            <span class="total num">14</span>
+          </div>
+          <div class="t-row">
+            <div>
+              <div class="academy">정상어학원 분당본관</div>
+              <div class="draw">2일 후 추첨 · ₩50,000 쿠폰</div>
+            </div>
+            <span class="count">×5</span>
+          </div>
+          <div class="t-row">
+            <div>
+              <div class="academy">청솔수학 야탑캠퍼스</div>
+              <div class="draw">5일 후 추첨 · ₩100,000 쿠폰</div>
+            </div>
+            <span class="count">×3</span>
+          </div>
+          <div class="t-row">
+            <div>
+              <div class="academy">판교테크원학원</div>
+              <div class="draw">9일 후 추첨 · ₩30,000 쿠폰</div>
+            </div>
+            <span class="count">×6</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="academy-section">
+        <div class="head">
+          <span class="ttl">학원별 보물상자 <em style="font-family: 'Newsreader', serif; font-style: italic; color: var(--gold);">— Loot Chests</em></span>
+          <span class="meta">파일럿 학원 30곳 · 분당·판교</span>
+        </div>
+        <div class="chest-grid">
+
+          <div class="chest glass">
+            <div class="chest-banner gold">
+              <span class="chest-rarity gold">Gold</span>
+              <div class="chest-icon"></div>
+            </div>
+            <div class="chest-body">
+              <div class="chest-name">정상어학원 분당본관</div>
+              <div class="chest-area">분당 / 영어 · 종합</div>
+              <div class="chest-loot">
+                <span class="amount">₩50,000</span>
+                <span class="left">42 / 100</span>
+              </div>
+              <div class="pool-bar-g"><div class="fill" style="width: 42%;"></div></div>
+            </div>
+          </div>
+
+          <div class="chest glass">
+            <div class="chest-banner legend">
+              <span class="chest-rarity legend">Legendary</span>
+              <div class="chest-icon"></div>
+            </div>
+            <div class="chest-body">
+              <div class="chest-name">청솔수학 야탑캠퍼스</div>
+              <div class="chest-area">분당 / 수학</div>
+              <div class="chest-loot">
+                <span class="amount">₩100,000</span>
+                <span class="left">18 / 30</span>
+              </div>
+              <div class="pool-bar-g"><div class="fill" style="width: 60%;"></div></div>
+            </div>
+          </div>
+
+          <div class="chest glass">
+            <div class="chest-banner silver">
+              <span class="chest-rarity silver">Silver</span>
+              <div class="chest-icon"></div>
+            </div>
+            <div class="chest-body">
+              <div class="chest-name">판교테크원학원</div>
+              <div class="chest-area">판교 / 코딩 · STEM</div>
+              <div class="chest-loot">
+                <span class="amount">₩30,000</span>
+                <span class="left">71 / 80</span>
+              </div>
+              <div class="pool-bar-g"><div class="fill" style="width: 88%;"></div></div>
+            </div>
+          </div>
+
+          <div class="chest glass">
+            <div class="chest-banner gold">
+              <span class="chest-rarity gold">Gold</span>
+              <div class="chest-icon"></div>
+            </div>
+            <div class="chest-body">
+              <div class="chest-name">김포입시반 분당점</div>
+              <div class="chest-area">분당 / 수학 · 내신</div>
+              <div class="chest-loot">
+                <span class="amount">₩70,000</span>
+                <span class="left">9 / 25</span>
+              </div>
+              <div class="pool-bar-g"><div class="fill" style="width: 36%;"></div></div>
+            </div>
+          </div>
+
+          <div class="chest glass">
+            <div class="chest-banner silver">
+              <span class="chest-rarity silver">Silver</span>
+              <div class="chest-icon"></div>
+            </div>
+            <div class="chest-body">
+              <div class="chest-name">한울국어학원</div>
+              <div class="chest-area">분당 / 국어 · 논술</div>
+              <div class="chest-loot">
+                <span class="amount">₩40,000</span>
+                <span class="left">22 / 40</span>
+              </div>
+              <div class="pool-bar-g"><div class="fill" style="width: 55%;"></div></div>
+            </div>
+          </div>
+
+          <div class="chest glass">
+            <div class="chest-banner bronze">
+              <span class="chest-rarity bronze">Bronze</span>
+              <div class="chest-icon"></div>
+            </div>
+            <div class="chest-body">
+              <div class="chest-name">판교사이언스</div>
+              <div class="chest-area">판교 / 과학</div>
+              <div class="chest-loot">
+                <span class="amount">₩40,000</span>
+                <span class="left">28 / 50</span>
+              </div>
+              <div class="pool-bar-g"><div class="fill" style="width: 56%;"></div></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== PROFILE ============== -->
+    <section class="view" id="view-me">
+      <div class="card-section-head">
+        <div class="ttl">캐릭터 시트 <em>— Character Sheet</em></div>
+        <div class="more">가입 18일째 · 2026.04.21</div>
+      </div>
+
+      <div class="profile-row">
+        <div class="glass char-sheet">
+          <div class="lbl">Trust Score · 신뢰도 계수</div>
+          <div class="gauge-3d">
+            <svg viewBox="0 0 100 100">
+              <circle class="bg-c" cx="50" cy="50" r="42"/>
+              <circle class="fg-c" cx="50" cy="50" r="42"
+                stroke-dasharray="263.9" stroke-dashoffset="55.4"/>
+            </svg>
+            <div class="center">
+              <b class="num">1.18</b>
+              <span>multiplier</span>
+            </div>
+          </div>
+          <div class="char-tier">
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="currentColor"><path d="M6 0L7.5 4L12 4.5L8.5 7.5L9.5 12L6 9.5L2.5 12L3.5 7.5L0 4.5L4.5 4L6 0Z"/></svg>
+            DEVOTED READER · LV. 12
+          </div>
+          <div class="char-meta">
+            <span class="key">+0.18</span> 가산 · 14일 연속 정상 활동.<br>
+            <span style="font-family: 'Newsreader', serif; font-style: italic;">7일 더 정독 시 1.25로 상승.</span>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div class="stat-tiles-g">
+
+            <div class="glass stat-tile-g">
+              <div class="lbl">평균 정독 시간</div>
+              <div class="stat-num-big num">3'47"</div>
+              <div class="delta-row">
+                <span class="delta">↑ +24" vs 전주</span>
+                <div class="spark-g">
+                  <span style="height: 30%;"></span>
+                  <span style="height: 45%;"></span>
+                  <span style="height: 38%;"></span>
+                  <span style="height: 60%;"></span>
+                  <span style="height: 52%;"></span>
+                  <span style="height: 71%;"></span>
+                  <span style="height: 88%;"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass stat-tile-g gold">
+              <div class="lbl">이번 주 코인 적립</div>
+              <div class="stat-num-big num">+820<span class="unit gold">P</span></div>
+              <div class="delta-row">
+                <span class="delta">↑ +12% vs 전주</span>
+                <div class="spark-g">
+                  <span style="height: 40%;"></span>
+                  <span style="height: 22%;"></span>
+                  <span style="height: 65%;"></span>
+                  <span style="height: 48%;"></span>
+                  <span style="height: 70%;"></span>
+                  <span style="height: 90%;"></span>
+                  <span style="height: 80%;"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass stat-tile-g">
+              <div class="lbl">완료한 퀘스트</div>
+              <div class="stat-num-big num">62</div>
+              <div class="delta-row">
+                <span class="delta">완독률 78%</span>
+                <div class="spark-g">
+                  <span style="height: 50%;"></span>
+                  <span style="height: 60%;"></span>
+                  <span style="height: 55%;"></span>
+                  <span style="height: 80%;"></span>
+                  <span style="height: 70%;"></span>
+                  <span style="height: 95%;"></span>
+                  <span style="height: 85%;"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass stat-tile-g gold">
+              <div class="lbl">작성한 글 — 누적 P</div>
+              <div class="stat-num-big num">+345<span class="unit gold">P</span></div>
+              <div class="delta-row">
+                <span class="delta">정독자 <span class="num">186</span>명</span>
+                <div class="spark-g">
+                  <span style="height: 0%;"></span>
+                  <span style="height: 18%;"></span>
+                  <span style="height: 24%;"></span>
+                  <span style="height: 32%;"></span>
+                  <span style="height: 50%;"></span>
+                  <span style="height: 60%;"></span>
+                  <span style="height: 78%;"></span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="glass skills-card">
+            <div class="skills-head">
+              <span class="ttl">Reader Skills · 능력치</span>
+              <span class="meta">활동 패턴 기반 자동 산출</span>
+            </div>
+            <div class="skill-row">
+              <span class="name">정독 집중력</span>
+              <div class="skill-bar"><div class="fill cyan" style="width: 84%;"></div></div>
+              <span class="skill-pts num">84</span>
+            </div>
+            <div class="skill-row">
+              <span class="name">큐레이션 안목</span>
+              <div class="skill-bar"><div class="fill blue" style="width: 67%;"></div></div>
+              <span class="skill-pts num">67</span>
+            </div>
+            <div class="skill-row">
+              <span class="name">작성 영향력</span>
+              <div class="skill-bar"><div class="fill gold" style="width: 41%;"></div></div>
+              <span class="skill-pts num">41</span>
+            </div>
+            <div class="skill-row">
+              <span class="name">커뮤니티 신뢰</span>
+              <div class="skill-bar"><div class="fill magenta" style="width: 72%;"></div></div>
+              <span class="skill-pts num">72</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass my-posts-g">
+        <div class="head">
+          <span class="ttl">내가 쓴 글 — Write-to-Earn</span>
+          <span class="meta">정독자 누적에 따라 사후 평가 보상이 적립됩니다</span>
+        </div>
+        <div class="post-row-g">
+          <div class="idx num">01</div>
+          <div>
+            <h4>판교 영어유치원 4곳 — 졸업 후 1년이 지난 지금 본 차이</h4>
+            <div class="submeta">2026.04.27 · 학원 후기</div>
+          </div>
+          <div class="reads"><div class="n num">128</div><div class="lbl">정독</div></div>
+          <div class="earnings"><div class="n num">+182 P</div><div class="lbl">누적</div></div>
+        </div>
+        <div class="post-row-g">
+          <div class="idx num">02</div>
+          <div>
+            <h4>분당 수학 사교육 — 6학년 시작이 빠른 걸까 늦은 걸까</h4>
+            <div class="submeta">2026.05.02 · 교육 일반</div>
+          </div>
+          <div class="reads"><div class="n num">42</div><div class="lbl">정독</div></div>
+          <div class="earnings"><div class="n num">+98 P</div><div class="lbl">누적</div></div>
+        </div>
+        <div class="post-row-g">
+          <div class="idx num">03</div>
+          <div>
+            <h4>중간고사 직전 일주일, 가정에서 한 일 / 안 한 일</h4>
+            <div class="submeta">2026.05.05 · 교육 일반</div>
+          </div>
+          <div class="reads"><div class="n num">16</div><div class="lbl">정독</div></div>
+          <div class="earnings"><div class="n num">+65 P</div><div class="lbl">누적</div></div>
+        </div>
+      </div>
+
+      <div class="glass log-card">
+        <div class="head">
+          <span class="ttl">Recent Activity</span>
+          <span class="meta">자동 어뷰징 탐지 통과 · 보상 즉시 반영</span>
+        </div>
+        <div class="log-row">
+          <div class="when">2시간 전</div>
+          <div><strong>분당 수학학원 셋, 7개월…</strong> 정독 완료 (88%)</div>
+          <div class="gain">+88 P</div>
+        </div>
+        <div class="log-row">
+          <div class="when">5시간 전</div>
+          <div>정상어학원 본관 응모권 — 정독 보상</div>
+          <div class="gain cyan">+1 ticket</div>
+        </div>
+        <div class="log-row">
+          <div class="when">어제</div>
+          <div><strong>2027 자사고·외고 입시 일정</strong> 정독 완료 (94%)</div>
+          <div class="gain">+90 P</div>
+        </div>
+        <div class="log-row">
+          <div class="when">어제</div>
+          <div>신뢰도 계수 상승 — <span style="font-family: 'Newsreader', serif; font-style: italic; color: var(--cyan);">1.16 → 1.18</span></div>
+          <div class="gain cyan">×</div>
+        </div>
+        <div class="log-row">
+          <div class="when">2일 전</div>
+          <div><strong>판교 미술학원 둘…</strong> 정독 시간 부족 (54%)</div>
+          <div class="gain minus">미적립</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast-g" id="toast">
+  <div class="lbl">PoE EARNED</div>
+  <div class="big"><span class="plus">+</span><span id="toastP" class="num">75</span> <span style="color: var(--text-mute); font-size: 16px;">P</span></div>
+  <div class="desc" id="toastDesc">본문 80% 정독 + 30초 체류 충족.<br>응모권 <span class="num">1</span>장이 인벤토리에 추가됐습니다.</div>
+</div>
+
+<script>
+  // particles
+  (function spawnParticles() {
+    const root = document.getElementById('particles');
+    const colors = ['', 'gold', 'blue'];
+    for (let i = 0; i < 22; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle ' + colors[Math.floor(Math.random()*colors.length)];
+      p.style.left = (Math.random() * 100) + 'vw';
+      p.style.animationDelay = (Math.random() * 16) + 's';
+      p.style.animationDuration = (12 + Math.random() * 12) + 's';
+      const size = 1 + Math.random() * 3;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      root.appendChild(p);
+    }
+  })();
+
+  // VIEW SWITCH
+  function switchView(name) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.menu-item').forEach(t => t.classList.remove('active'));
+    const view = document.getElementById('view-' + name);
+    if (view) view.classList.add('active');
+    const tab = document.querySelector('.menu-item[data-view="' + name + '"]');
+    if (tab) tab.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    if (name === 'article') {
+      resetPoE();
+    }
+  }
+  function goToArticle() { switchView('article'); }
+  document.querySelectorAll('.menu-item').forEach(t => {
+    t.addEventListener('click', () => switchView(t.dataset.view));
+  });
+
+  // PoE
+  let poeStartTs = null;
+  let poeMaxScrollPct = 0;
+  let poeAwarded = false;
+  let poeTimerId = null;
+
+  function resetPoE() {
+    poeStartTs = Date.now();
+    poeMaxScrollPct = 0;
+    poeAwarded = false;
+    document.getElementById('poeFill').style.width = '0%';
+    document.getElementById('poePct').textContent = '0%';
+    document.getElementById('poeTime').textContent = '0';
+    document.getElementById('poeStatus').textContent = '측정 중…';
+    document.getElementById('progressCard').classList.remove('complete');
+    if (poeTimerId) clearInterval(poeTimerId);
+    poeTimerId = setInterval(updatePoETime, 1000);
+  }
+
+  function updatePoETime() {
+    if (!poeStartTs) return;
+    const elapsed = Math.floor((Date.now() - poeStartTs) / 1000);
+    document.getElementById('poeTime').textContent = elapsed;
+    checkPoEThreshold(elapsed);
+  }
+
+  function checkPoEThreshold(elapsedSec) {
+    if (poeAwarded) return;
+    if (poeMaxScrollPct >= 80 && elapsedSec >= 30) {
+      poeAwarded = true;
+      document.getElementById('progressCard').classList.add('complete');
+      document.getElementById('poeStatus').textContent = '✓ Quest Cleared';
+      showToast(75, '본문 80% 정독 + 30초 체류 충족.<br>응모권 <span class="num">1</span>장이 인벤토리에 추가됐습니다.');
+      bumpBalance(75);
+    }
+  }
+
+  function getArticleScrollPct() {
+    const body = document.getElementById('articleBody');
+    if (!body) return 0;
+    if (!document.getElementById('view-article').classList.contains('active')) return 0;
+    const rect = body.getBoundingClientRect();
+    const total = body.offsetHeight;
+    const viewport = window.innerHeight;
+    const passed = Math.max(0, viewport - rect.top);
+    const pct = Math.min(100, Math.max(0, (passed / total) * 100));
+    return pct;
+  }
+
+  function onScroll() {
+    if (!document.getElementById('view-article').classList.contains('active')) return;
+    const pct = getArticleScrollPct();
+    if (pct > poeMaxScrollPct) poeMaxScrollPct = pct;
+    document.getElementById('poeFill').style.width = poeMaxScrollPct + '%';
+    document.getElementById('poePct').textContent = Math.floor(poeMaxScrollPct) + '%';
+    if (poeStartTs) {
+      const elapsed = Math.floor((Date.now() - poeStartTs) / 1000);
+      checkPoEThreshold(elapsed);
+    }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Toast
+  function showToast(pAmount, desc) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toastP').textContent = '+' + pAmount;
+    document.getElementById('toastDesc').innerHTML = desc;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 5500);
+  }
+
+  // Balance
+  let currentBalance = 2840;
+  function bumpBalance(delta) {
+    currentBalance += delta;
+    const target = currentBalance;
+    const el = document.getElementById('balanceTop');
+    let cur = currentBalance - delta;
+    const step = Math.ceil(delta / 24);
+    const t = setInterval(() => {
+      cur += step;
+      if (cur >= target) { cur = target; clearInterval(t); }
+      el.textContent = cur.toLocaleString();
+    }, 32);
+  }
+
+  // Response opt
+  function selectOpt(el, helpful) {
+    document.querySelectorAll('.response-card .opt').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  // 3D card tilt on hover for quest cards
+  document.querySelectorAll('.qc, .chest').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      card.style.transform = `translateY(-6px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
+</script>
+
+</body>
+</html>
